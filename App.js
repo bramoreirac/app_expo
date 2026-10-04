@@ -1,26 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
+import { useState } from 'react';
 import { useFonts } from 'expo-font';
 import {
   JetBrainsMono_400Regular,
   JetBrainsMono_700Bold,
 } from '@expo-google-fonts/jetbrains-mono';
-import { StyleSheet, Text, View, Image, Pressable, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
     JetBrainsMono_400Regular,
     JetBrainsMono_700Bold,
   });
+  const [mensajeVisible, setMensajeVisible] = useState(false);
+  const [fechaVisible, setFechaVisible] = useState(false);
 
-  const mostrarMensaje = () => {
-    Alert.alert('¡Excelente!', 'Tu primera aplicación está funcionando.');
-  };
-
-  const diaActual = () => {
+  const obtenerDiaActual = () => {
     const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     const fecha = new Date();
     const dia = dias[fecha.getDay()];
-    Alert.alert('Día Actual', `Hoy es ${dia} ${fecha.toLocaleDateString()}`);
+    return `Hoy es ${dia} ${fecha.toLocaleDateString()}`;
   };
 
   if (fontError) {
@@ -45,13 +44,23 @@ export default function App() {
       <Text style={styles.texto}>Maynor Lopez / 23-05945-1</Text>
       <Text style={styles.texto}>Carrera: Ingeniería en TI</Text>
 
-      <Pressable style={styles.boton} onPress={mostrarMensaje}>
+      <Pressable
+        style={styles.boton}
+        onPress={() => setMensajeVisible((visible) => !visible)}
+      >
         <Text style={styles.textoBoton}>Probar aplicación</Text>
       </Pressable>
+      {mensajeVisible && (
+        <Text style={styles.mensaje}>¡Excelente! Tu aplicación está funcionando.</Text>
+      )}
 
-      <Pressable style={styles.boton} onPress={diaActual}>
-        <Text style={styles.textoBoton}>Que dia es hoy?</Text>
+      <Pressable
+        style={styles.boton}
+        onPress={() => setFechaVisible((visible) => !visible)}
+      >
+        <Text style={styles.textoBoton}>¿Qué día es hoy?</Text>
       </Pressable>
+      {fechaVisible && <Text style={styles.mensaje}>{obtenerDiaActual()}</Text>}
     </View>
   );
 }
@@ -103,5 +112,13 @@ const styles = StyleSheet.create({
     fontFamily: 'JetBrainsMono_700Bold',
     color: '#B8FFCA',
     fontSize: 16,
+  },
+
+  mensaje: {
+    fontFamily: 'JetBrainsMono_400Regular',
+    color: '#8FE3A5',
+    fontSize: 15,
+    marginTop: 10,
+    textAlign: 'center',
   },
 });
