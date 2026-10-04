@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "MiPrimeraApp",
+    "name": "Guía Canina",
     "slug": "MiPrimeraApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "guiacanina",
     "ios": {
       "supportsTablet": true
     },
@@ -25,6 +26,10 @@
       "eas": {
         "projectId": "df1edbbf-4d31-4ef5-b1c9-b8db5349f579"
       }
-    }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite"
+    ]
   }
 }
