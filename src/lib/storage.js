@@ -10,6 +10,29 @@ async function database() {
         CREATE TABLE IF NOT EXISTS dogs (id TEXT PRIMARY KEY NOT NULL, payload TEXT NOT NULL, updated_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS measurements (id TEXT PRIMARY KEY NOT NULL, dog_id TEXT NOT NULL, measured_on TEXT NOT NULL, weight_kg REAL NOT NULL, bcs INTEGER NOT NULL, created_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS feeding_plans (id TEXT PRIMARY KEY NOT NULL, dog_id TEXT NOT NULL, payload TEXT NOT NULL, created_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS vaccine_events (
+          id TEXT PRIMARY KEY NOT NULL,
+          dog_id TEXT NOT NULL,
+          antigens_json TEXT NOT NULL,
+          administered_on TEXT NOT NULL,
+          product_name TEXT,
+          manufacturer TEXT,
+          lot TEXT,
+          clinic_or_campaign TEXT,
+          administrator TEXT,
+          certificate_uri TEXT,
+          source TEXT NOT NULL,
+          verification_status TEXT NOT NULL CHECK (verification_status IN ('unverified', 'verified')),
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS vaccine_event_history (
+          id TEXT PRIMARY KEY NOT NULL,
+          event_id TEXT NOT NULL,
+          snapshot_json TEXT NOT NULL,
+          change_reason TEXT NOT NULL,
+          changed_at TEXT NOT NULL
+        );
       `);
       return db;
     }).catch((error) => { databasePromise = null; throw error; });
@@ -31,6 +54,19 @@ export async function saveDog(dog) {
   const db = await database();
   const now = new Date().toISOString();
   await db.runAsync('INSERT OR REPLACE INTO dogs (id, payload, updated_at) VALUES (?, ?, ?)', 'primary', JSON.stringify(dog), now);
+}
+
+export async function clearSavedCare() {
+  const db = await database();
+  await db.withExclusiveTransactionAsync(async (txn) => {
+    await txn.execAsync(`
+      DELETE FROM vaccine_event_history;
+      DELETE FROM vaccine_events;
+      DELETE FROM feeding_plans;
+      DELETE FROM measurements;
+      DELETE FROM dogs;
+    `);
+  });
 }
 
 export async function saveFeedingPlan(dog, inputs, result, measuredOn) {

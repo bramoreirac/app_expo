@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { calculateFeeding } = require('./src/lib/feeding');
 
 const luna = {
-  stage: 'adult', weightKg: '12', bcs: '5', neutered: true, lowActivity: false,
+  stage: 'adult', weightKg: '12', bcs: '5', neutered: true, obesityProne: false,
   mealsPerDay: '2', treatKcal: '40', otherKcal: '0', foodComplete: true, foodStageSuitable: true, stableWeight: true,
   energyDensity: '3500', energyUnit: 'kg', healthFlags: {},
 };
@@ -46,6 +46,14 @@ test('puppy factor changes at four months', () => {
   const four = calculateFeeding({ ...luna, stage: 'puppy', ageMonths: '4' });
   assert.equal(three.factor, 3);
   assert.equal(four.factor, 2);
+});
+
+test('adult obesity tendency selects 1.4 while low activity alone does not', () => {
+  assert.equal(calculateFeeding({ ...luna, obesityProne: true }).factor, 1.4);
+  assert.equal(calculateFeeding({ ...luna, lowActivity: true }).factor, 1.6);
+  const unanswered = calculateFeeding({ ...luna, obesityProne: null, lowActivity: true });
+  assert.equal(unanswered.ok, false);
+  assert.ok(unanswered.errors.obesityProne);
 });
 
 test('kcal per 100 g gives the same portion as kcal per kg', () => {

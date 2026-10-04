@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, fonts } from '../../theme';
 
-const icons = { index: ['home-outline', 'home'], alimentar: ['restaurant-outline', 'restaurant'], perfil: ['paw-outline', 'paw'] };
+const icons = { index: ['home-outline', 'home'], alimentar: ['restaurant-outline', 'restaurant'], vacunas: ['medkit-outline', 'medkit'], perfil: ['paw-outline', 'paw'] };
 
 export default function TabLayout() {
   return <Tabs screenOptions={({ route }) => ({
@@ -15,6 +15,7 @@ export default function TabLayout() {
   })}>
     <Tabs.Screen name="index" options={{ title: 'Inicio' }} />
     <Tabs.Screen name="alimentar" options={{ title: 'Alimentación' }} />
+    <Tabs.Screen name="vacunas" options={{ title: 'Vacunas' }} />
     <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
   </Tabs>;
 }

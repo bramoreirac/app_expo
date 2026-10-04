@@ -63,7 +63,7 @@ Use the exponential RER equation for all body weights. The `30 × kg + 70` short
 | Puppy 4 months and older while growing | 2.0 | Reassess as growth slows; expected adult size matters. |
 | Adult, intact | 1.8 | Starting point. |
 | Adult, neutered | 1.6 | Starting point. |
-| Adult prone to obesity / low activity | 1.4 | Use only with BCS and trend review. |
+| Adult prone to obesity | 1.4 | Use only with BCS and weight trend review; low activity alone does not establish obesity tendency. |
 
 Factors are from [Merck's maintenance-energy table](https://www.merckvetmanual.com/multimedia/table/daily-maintenance-energy-requirements-for-dogs-and-cats); individual needs vary substantially. Do not multiply several rows together. Working/athletic dogs and extreme heat or other exposure need veterinarian-set targets instead of invented generic multipliers. Do not apply an automatic factor from breed alone.
 

@@ -1,16 +1,16 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { loadSavedCare, saveDog, saveFeedingPlan } from '../lib/storage';
+import { clearSavedCare, loadSavedCare, saveDog, saveFeedingPlan } from '../lib/storage';
 import { managuaDate } from '../lib/dates';
 
 const CareContext = createContext(null);
 const initialDraft = {
   name: '', stage: '', ageMonths: '', ageApproximate: false, weightKg: '', bcs: '', neutered: false,
-  lowActivity: false, stableWeight: null, healthFlags: {}, foodName: '', foodComplete: null, foodStageSuitable: null, energyDensity: '', energyUnit: 'kg',
+  obesityProne: null, stableWeight: null, healthFlags: {}, foodName: '', foodComplete: null, foodStageSuitable: null, energyDensity: '', energyUnit: 'kg',
   treatKcal: '0', otherKcal: '0', mealsPerDay: '2', measuredOn: managuaDate(),
 };
 
 function dogFromDraft(draft) {
-  return { name: draft.name.trim(), stage: draft.stage, ageMonths: draft.ageMonths, ageApproximate: draft.ageApproximate, weightKg: draft.weightKg, bcs: draft.bcs, measuredOn: draft.measuredOn, neutered: draft.neutered, lowActivity: draft.lowActivity, stableWeight: draft.stableWeight, healthFlags: draft.healthFlags, foodName: draft.foodName };
+  return { name: draft.name.trim(), stage: draft.stage, ageMonths: draft.ageMonths, ageApproximate: draft.ageApproximate, weightKg: draft.weightKg, bcs: draft.bcs, measuredOn: draft.measuredOn, neutered: draft.neutered, obesityProne: draft.obesityProne, stableWeight: draft.stableWeight, healthFlags: draft.healthFlags, foodName: draft.foodName };
 }
 
 export function CareProvider({ children }) {
@@ -20,6 +20,7 @@ export function CareProvider({ children }) {
   const [measurements, setMeasurements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [storageError, setStorageError] = useState('');
+  const [resetVersion, setResetVersion] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -28,7 +29,8 @@ export function CareProvider({ children }) {
       setDog(saved.dog);
       setPlan(saved.plan);
       setMeasurements(saved.measurements);
-      setDraft((current) => ({ ...current, ...(saved.plan?.inputs || saved.dog || {}), measuredOn: managuaDate() }));
+      const { lowActivity: _legacyLowActivity, ...savedInputs } = saved.plan?.inputs || saved.dog || {};
+      setDraft((current) => ({ ...current, ...savedInputs, measuredOn: managuaDate() }));
     }).catch(() => { if (active) setStorageError('No se pudieron abrir los datos guardados en este dispositivo.'); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
@@ -55,7 +57,17 @@ export function CareProvider({ children }) {
     return nextPlan;
   }
 
-  return <CareContext.Provider value={{ draft, updateDraft, dog, plan, measurements, loading, storageError, persistProfile, persistPlan }}>{children}</CareContext.Provider>;
+  async function resetCare() {
+    await clearSavedCare();
+    setDraft({ ...initialDraft, healthFlags: {}, measuredOn: managuaDate() });
+    setDog(null);
+    setPlan(null);
+    setMeasurements([]);
+    setStorageError('');
+    setResetVersion((current) => current + 1);
+  }
+
+  return <CareContext.Provider value={{ draft, updateDraft, dog, plan, measurements, loading, storageError, resetVersion, persistProfile, persistPlan, resetCare }}>{children}</CareContext.Provider>;
 }
 
 export function useCare() {

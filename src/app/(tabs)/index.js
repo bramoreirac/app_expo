@@ -9,9 +9,9 @@ import { displayDate } from '../../lib/dates';
 export default function HomeScreen() {
   const { dog, plan, loading, storageError } = useCare();
   const name = dog?.name || 'tu perro';
-  return <Screen eyebrow="Guía canina" title={`Cuidemos a ${name}`} subtitle="Alimentación clara, paso a paso y a tu ritmo.">
+  return <Screen eyebrow="Guía canina" title={`Cuidemos a ${name}`} subtitle="Alimentación y vacunas explicadas paso a paso.">
     <Card style={styles.hero}>
-      <Image source={require('../../../assets/dog_image.jpg')} style={styles.heroImage} resizeMode="contain" accessible accessibilityLabel="Ilustración de un perro junto a sus cubiertos" />
+      <Image source={require('../../../assets/dog_icon.jpg')} style={styles.heroImage} resizeMode="contain" accessible accessibilityLabel="Ilustración de un perro con un hueso" />
       <Text style={styles.heroTitle}>Un buen plan empieza conociéndolo</Text>
       <Body>Guarda su perfil y calcula una porción inicial con la energía indicada en su alimento.</Body>
     </Card>
@@ -26,24 +26,26 @@ export default function HomeScreen() {
       <Action title={plan ? 'Revisar cálculo' : 'Calcular alimento'} onPress={() => router.push('/alimentar')} />
     </Card>
     <Card>
+      <View style={styles.row}><Ionicons name="medkit-outline" size={25} color={colors.primary} /><Heading>Guía de vacunas</Heading></View>
+      <Body>Consulta el calendario general para cachorros y adultos. Esta guía no determina el estado de vacunación de tu perro.</Body>
+      <Action title="Consultar vacunas" secondary onPress={() => router.push('/vacunas')} />
+    </Card>
+    <Card>
       <View style={styles.row}><Ionicons name="paw-outline" size={25} color={colors.primary} /><Heading>Perfil de tu perro</Heading></View>
       <Body>{dog?.name ? `${dog.name} tiene un perfil guardado en este dispositivo.` : 'Agrega nombre, etapa de vida y otros datos para personalizar la guía.'}</Body>
       <Action title={dog?.name ? 'Editar perfil' : 'Crear perfil'} secondary onPress={() => router.push('/perfil')} />
     </Card>
-    <View style={styles.next}><Ionicons name="medkit-outline" size={20} color={colors.muted} /><Text style={styles.nextText}>Guía de vacunas · disponible en Sprint 2</Text></View>
     <Body style={styles.disclaimer}>Esta app ofrece estimaciones educativas y recordatorios. No diagnostica enfermedades, prescribe dietas, determina dosis de vacunas ni sustituye al veterinario o las indicaciones del MINSA.</Body>
   </Screen>;
 }
 
 const styles = StyleSheet.create({
-  hero: { backgroundColor: '#E9F5F0', borderColor: '#D3E9DF' },
-  heroImage: { width: '100%', height: 150, borderRadius: 16, backgroundColor: '#F7FAF7' },
+  hero: { backgroundColor: colors.surface, borderColor: '#D3E9DF' },
+  heroImage: { width: 170, height: 170, alignSelf: 'center' },
   heroTitle: { color: colors.text, fontFamily: fonts.heading, fontSize: 22, lineHeight: 30 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   value: { color: colors.primaryDark, fontFamily: fonts.heading, fontSize: 32 },
   review: { color: colors.warning, fontFamily: fonts.bold, fontSize: 18 },
   unit: { color: colors.muted, fontFamily: fonts.semi, fontSize: 16 },
-  next: { flexDirection: 'row', alignItems: 'center', gap: 9, padding: 15 },
-  nextText: { color: colors.muted, fontFamily: fonts.semi, fontSize: 15, flexShrink: 1 },
   disclaimer: { color: colors.muted, fontSize: 13, lineHeight: 19, marginTop: 4 },
 });

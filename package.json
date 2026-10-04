@@ -31,7 +31,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint .",
-    "test": "node --test feeding.test.cjs"
+    "test": "node --test feeding.test.cjs vaccine-guide.test.cjs"
   },
   "private": true
 }

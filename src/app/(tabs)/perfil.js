@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { Action, Body, Card, Choices, Field, Heading, Notice, Screen } from '../../components/UI';
 import { useCare } from '../../state/CareContext';
 import { displayDate } from '../../lib/dates';
@@ -9,10 +9,11 @@ import { numberFromInput } from '../../lib/feeding';
 const yesNo = [{ label: 'Sí', value: true }, { label: 'No', value: false }];
 
 export default function ProfileScreen() {
-  const { draft, updateDraft, measurements, persistProfile, loading } = useCare();
+  const { draft, updateDraft, measurements, persistProfile, resetCare, loading } = useCare();
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const set = (key) => (value) => { updateDraft({ [key]: value }); setMessage(''); setErrors((current) => ({ ...current, [key]: undefined })); };
 
   async function save() {
@@ -28,6 +29,30 @@ export default function ProfileScreen() {
     finally { setSaving(false); }
   }
 
+  async function reset() {
+    setResetting(true);
+    try {
+      await resetCare();
+      setErrors({});
+      setMessage('Se borraron los datos guardados en este dispositivo.');
+    } catch {
+      setMessage('No se pudieron borrar los datos. Intenta de nuevo.');
+    } finally {
+      setResetting(false);
+    }
+  }
+
+  function confirmReset() {
+    Alert.alert(
+      '¿Borrar todos los datos?',
+      'Se eliminarán el perfil, las mediciones, los cálculos de alimento y los registros de vacunas guardados en este dispositivo. Esta acción no se puede deshacer.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Borrar datos', style: 'destructive', onPress: reset },
+      ],
+    );
+  }
+
   return <Screen eyebrow="Datos de tu compañero" title="Perfil" subtitle="Estos datos ayudan a interpretar la estimación. Puedes corregirlos cuando cambien.">
     <Card><Heading>Datos básicos</Heading>
       <Field label="Nombre" value={draft.name} onChangeText={set('name')} placeholder="Ej. Luna" error={errors.name} />
@@ -41,13 +66,17 @@ export default function ProfileScreen() {
       <Field label="Condición corporal (1–9)" value={draft.bcs} onChangeText={set('bcs')} keyboardType="number-pad" placeholder="Ej. 5" hint="4–5/9 suele ser la zona ideal. Pide ayuda veterinaria si no sabes evaluarla." error={errors.bcs} />
       <Body style={styles.small}>Fecha de próxima medición: {displayDate(draft.measuredOn)}</Body>
     </Card>
-    <Card><Heading>Actividad y salud</Heading>
-      <Choices label="¿Tiene poca actividad o tendencia a ganar peso?" value={draft.lowActivity} options={yesNo} onChange={set('lowActivity')} />
+    <Card><Heading>Peso y salud</Heading>
+      {draft.stage === 'adult' ? <Choices label="¿Tiene tendencia a ganar peso?" value={draft.obesityProne} options={yesNo} onChange={set('obesityProne')} /> : null}
       <Body style={styles.small}>Si hay enfermedad, gestación, pérdida de músculo o dieta prescrita, indícalo antes de calcular alimento.</Body>
     </Card>
     {message ? <Notice title={Object.keys(errors).length ? 'Revisa el perfil' : 'Estado del perfil'}>{message}</Notice> : null}
-    <Action title={saving ? 'Guardando…' : 'Guardar perfil'} onPress={save} disabled={loading || saving} />
+    <Action title={saving ? 'Guardando…' : 'Guardar perfil'} onPress={save} disabled={loading || saving || resetting} />
     {measurements.length ? <Card><Heading>Mediciones guardadas</Heading>{measurements.map((item, index) => <View key={`${item.measured_on}-${index}`} style={styles.measurement}><Text style={styles.measureDate}>{displayDate(item.measured_on)}</Text><Text style={styles.measureValue}>{item.weight_kg} kg · BCS {item.bcs}/9</Text></View>)}</Card> : null}
+    <Card><Heading>Datos de este dispositivo</Heading>
+      <Body style={styles.small}>Borra el perfil y todo el historial guardado en esta instalación de la app.</Body>
+      <Action title={resetting ? 'Borrando datos…' : 'Borrar todos los datos'} danger onPress={confirmReset} disabled={loading || saving || resetting} />
+    </Card>
   </Screen>;
 }
 

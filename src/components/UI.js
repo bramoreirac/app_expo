@@ -15,11 +15,11 @@ export function Card({ children, style }) { return <View style={[styles.card, st
 export function Heading({ children }) { return <Text style={styles.heading}>{children}</Text>; }
 export function Body({ children, style }) { return <Text style={[styles.body, style]}>{children}</Text>; }
 
-export function Action({ title, onPress, secondary = false, disabled = false, icon = null }) {
+export function Action({ title, onPress, secondary = false, danger = false, disabled = false, icon = null }) {
   return <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" accessibilityLabel={title}
-    style={({ pressed }) => [styles.action, secondary && styles.actionSecondary, disabled && styles.actionDisabled, pressed && !disabled && styles.actionPressed]}>
+    style={({ pressed }) => [styles.action, secondary && styles.actionSecondary, danger && styles.actionDanger, disabled && styles.actionDisabled, pressed && !disabled && styles.actionPressed]}>
     {icon ? <View style={styles.actionIcon}>{icon}</View> : null}
-    <Text style={[styles.actionText, secondary && styles.actionTextSecondary]}>{title}</Text>
+    <Text style={[styles.actionText, secondary && !danger && styles.actionTextSecondary]}>{title}</Text>
   </Pressable>;
 }
 
@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
   body: { color: colors.text, fontFamily: fonts.regular, fontSize: 16, lineHeight: 24 },
   action: { minHeight: 52, borderRadius: 15, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 18, flexDirection: 'row', gap: 9 },
   actionSecondary: { backgroundColor: colors.surfaceSoft, borderWidth: 1, borderColor: colors.primary },
+  actionDanger: { backgroundColor: colors.danger },
   actionDisabled: { opacity: 0.5 }, actionPressed: { opacity: 0.82 }, actionIcon: { marginRight: 2 },
   actionText: { color: '#FFFFFF', fontFamily: fonts.bold, fontSize: 16, textAlign: 'center' },
   actionTextSecondary: { color: colors.primaryDark },

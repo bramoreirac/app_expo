@@ -1,5 +1,5 @@
-const FACTORS = Object.freeze({ puppyUnder4: 3, puppyGrowing: 2, adultIntact: 1.8, adultNeutered: 1.6, adultLowActivity: 1.4 });
-const RULE_VERSION = 'feeding-nicaragua-1.0';
+const FACTORS = Object.freeze({ puppyUnder4: 3, puppyGrowing: 2, adultIntact: 1.8, adultNeutered: 1.6, adultObesityProne: 1.4 });
+const RULE_VERSION = 'feeding-nicaragua-1.1';
 
 function numberFromInput(value) {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null;
@@ -31,6 +31,7 @@ function validateFeeding(input) {
   if (typeof input.foodComplete !== 'boolean') errors.foodComplete = 'Confirma si el alimento es completo y balanceado.';
   if (typeof input.foodStageSuitable !== 'boolean') errors.foodStageSuitable = 'Confirma si el alimento corresponde a su etapa de vida.';
   if (typeof input.stableWeight !== 'boolean') errors.stableWeight = 'Confirma si su peso ha estado estable.';
+  if (input.stage === 'adult' && typeof input.obesityProne !== 'boolean') errors.obesityProne = 'Indica si tiene tendencia a ganar peso.';
   return errors;
 }
 
@@ -44,7 +45,7 @@ function calculateFeeding(input) {
   const treats = numberFromInput(input.treatKcal);
   const extras = numberFromInput(input.otherKcal);
   const density = numberFromInput(input.energyDensity);
-  const factor = input.stage === 'puppy' ? (ageMonths < 4 ? FACTORS.puppyUnder4 : FACTORS.puppyGrowing) : input.lowActivity ? FACTORS.adultLowActivity : input.neutered ? FACTORS.adultNeutered : FACTORS.adultIntact;
+  const factor = input.stage === 'puppy' ? (ageMonths < 4 ? FACTORS.puppyUnder4 : FACTORS.puppyGrowing) : input.obesityProne ? FACTORS.adultObesityProne : input.neutered ? FACTORS.adultNeutered : FACTORS.adultIntact;
   const rerKcal = 70 * Math.pow(weight, 0.75);
   const targetKcal = rerKcal * factor;
   const nonFoodKcal = treats + extras;

@@ -60,6 +60,11 @@ function Result({ result, measuredOn, dogName }) {
 }
 
 export default function FeedingScreen() {
+  const { resetVersion } = useCare();
+  return <FeedingContent key={resetVersion} />;
+}
+
+function FeedingContent() {
   const { draft, updateDraft, plan, persistPlan, loading } = useCare();
   const [errors, setErrors] = useState({});
   const [result, setResult] = useState(null);
@@ -92,7 +97,8 @@ export default function FeedingScreen() {
       <Field label="Peso actual (kg)" value={draft.weightKg} onChangeText={set('weightKg')} keyboardType="decimal-pad" placeholder="Ej. 12" error={errors.weightKg} />
       <Field label="Condición corporal (1–9)" value={draft.bcs} onChangeText={set('bcs')} keyboardType="number-pad" placeholder="Ej. 5" hint="4–5/9 suele ser ideal. Si no sabes el valor, pide una valoración veterinaria." error={errors.bcs} />
       <Choices label="¿Está esterilizado/a?" value={draft.neutered} onChange={set('neutered')} options={yesNo} />
-      {draft.stage === 'adult' ? <Choices label="¿Tiene poca actividad o tendencia a ganar peso?" value={draft.lowActivity} onChange={set('lowActivity')} options={yesNo} /> : null}
+      {draft.stage === 'adult' ? <Choices label="¿Tiene tendencia a ganar peso?" value={draft.obesityProne} onChange={set('obesityProne')} options={yesNo} error={errors.obesityProne} /> : null}
+      {draft.stage === 'adult' ? <Body style={styles.small}>Responde Sí si ha ganado peso repetidamente o un veterinario indicó esta tendencia. La poca actividad por sí sola no basta.</Body> : null}
       <Choices label="¿Su peso se ha mantenido estable?" value={draft.stableWeight} onChange={set('stableWeight')} options={yesNo} error={errors.stableWeight} />
       <Body style={styles.small}>Medición usada: {displayDate(draft.measuredOn)}. Los cálculos nuevos se guardan con la fecha actual de Nicaragua.</Body>
     </Card>
