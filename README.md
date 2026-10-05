@@ -29,7 +29,7 @@ Scan the QR code with Expo Go. If the local network connection does not work, st
 npx expo start --tunnel
 ```
 
-In PowerShell, if the execution policy blocks Node's `.ps1` scripts, use `npm.cmd` and `npx.cmd` in the commands above (for example, `npm.cmd ci` and `npx.cmd expo start --tunnel`). See the [Expo Go connection troubleshooting guide](EXPO_GO_CONNECTION_TROUBLESHOOTING.md) for details.
+In PowerShell, if the execution policy blocks Node's `.ps1` scripts, use `npm.cmd` and `npx.cmd` in the commands above (for example, `npm.cmd ci` and `npx.cmd expo start --tunnel`). See the [Expo Go connection troubleshooting guide](troubleshooting/EXPO_GO_CONNECTION_TROUBLESHOOTING.md) for details.
 
 ## Build a test APK
 
@@ -43,7 +43,7 @@ With an Expo account, run this [EAS CLI](https://docs.expo.dev/build/introductio
 npx.cmd eas-cli@latest build -p android --profile preview
 ```
 
-The `preview` profile in [`eas.json`](eas.json) uses internal distribution, allowing the resulting APK to be installed directly on Android. For a previous build failure and its fix, see the [EAS troubleshooting report](EAS_ANDROID_BUILD_TROUBLESHOOTING.md).
+The `preview` profile in [`eas.json`](eas.json) uses internal distribution, allowing the resulting APK to be installed directly on Android. For a previous build failure and its fix, see the [EAS troubleshooting report](troubleshooting/EAS_ANDROID_BUILD_TROUBLESHOOTING.md).
 
 ## Checks
 
